@@ -311,7 +311,7 @@ namespace AvalonStudio.Controls.Standard.CodeEditor
             {
                 if (ee.InputModifiers == InputModifiers.Control)
                 {
-                    ZoomLevel += (10 * ee.Delta.Y);
+                    ZoomLevel += 10 * ee.Delta.Y;
                     ee.Handled = true;
                 }
             };
