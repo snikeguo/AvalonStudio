@@ -69,7 +69,7 @@ namespace AvalonStudio.Controls.Standard.CodeEditor
         public event EventHandler<TooltipDataRequestEventArgs> RequestTooltipContent;
 
         private bool _isLoaded = false;
-
+        
         private bool _textEntering;
         private readonly IShell _shell;
         private Subject<bool> _analysisTriggerEvents = new Subject<bool>();
@@ -107,7 +107,7 @@ namespace AvalonStudio.Controls.Standard.CodeEditor
 
             _columnLimitBackgroundRenderer = new ColumnLimitBackgroundRenderer();
 
-            _selectedDebugLineBackgroundRenderer = new SelectedDebugLineBackgroundRenderer();
+            _selectedDebugLineBackgroundRenderer = new SelectedDebugLineBackgroundRenderer();                                 
 
             TextArea.TextView.Margin = new Thickness(10, 0, 0, 0);
 
@@ -175,7 +175,7 @@ namespace AvalonStudio.Controls.Standard.CodeEditor
                 {
                     TextArea.TextView.BackgroundRenderers.Remove(_columnLimitBackgroundRenderer);
                 }
-            });
+            });            
 
             Options = new AvaloniaEdit.TextEditorOptions
             {
@@ -307,6 +307,15 @@ namespace AvalonStudio.Controls.Standard.CodeEditor
 
             _completionAssistant = new CompletionAssistantViewModel(_intellisense);
 
+            EventHandler<PointerWheelEventArgs> tunneledWheelHandler = (send, ee) =>
+            {
+                if (ee.InputModifiers == InputModifiers.Control)
+                {
+                    ZoomLevel += (10 * ee.Delta.Y);
+                    ee.Handled = true;
+                }
+            };
+
             EventHandler<KeyEventArgs> tunneledKeyUpHandler = (send, ee) =>
             {
                 if (CaretOffset > 0)
@@ -331,10 +340,11 @@ namespace AvalonStudio.Controls.Standard.CodeEditor
                 }
             };
 
+            AddHandler(PointerWheelChangedEvent, tunneledWheelHandler, RoutingStrategies.Tunnel);
             AddHandler(KeyDownEvent, tunneledKeyDownHandler, RoutingStrategies.Tunnel);
             AddHandler(KeyUpEvent, tunneledKeyUpHandler, RoutingStrategies.Tunnel);
         }
-
+        
         protected override void OnTextChanged(EventArgs e)
         {
             base.OnTextChanged(e);
